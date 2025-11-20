@@ -1,0 +1,14 @@
+com\neofilm\config\Koneksi.class
+com\neofilm\dao\UserDAO.class
+com\neofilm\controller\FavoritesServlet.class
+com\neofilm\controller\HomeServlet.class
+com\neofilm\controller\RegisterServlet.class
+com\neofilm\controller\MovieServlet.class
+com\neofilm\dao\MovieDAO.class
+com\neofilm\model\User.class
+com\neofilm\utils\DBConnection.class
+com\neofilm\controller\MovieDetailServlet.class
+com\neofilm\controller\LatestServlet.class
+com\neofilm\controller\LoginServlet.class
+com\neofilm\controller\Top10Servlet.class
+com\neofilm\model\Movie.class
