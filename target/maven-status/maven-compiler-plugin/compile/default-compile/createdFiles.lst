@@ -17,6 +17,7 @@ com\neofilm\controller\MovieDetailServlet.class
 com\neofilm\controller\LatestServlet.class
 com\neofilm\controller\LoginServlet.class
 com\neofilm\controller\Top10Servlet.class
+com\neofilm\controller\LogoutServlet.class
 com\neofilm\controller\ToggleFavoriteServlet.class
 com\neofilm\controller\AdminArticlesServlet.class
 com\neofilm\dao\ArticleDAO.class

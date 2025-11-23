@@ -17,7 +17,7 @@
                     <a href="login.jsp" class="btn btn-outline-light">Login</a>
                     <a href="register.jsp" class="btn btn-primary">Register</a>
                 <% } else { %>
-                    <a href="logout" class="btn btn-danger">Logout</a>
+                    <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">Logout</a>
                 <% } %>
             </div>
         </div>
