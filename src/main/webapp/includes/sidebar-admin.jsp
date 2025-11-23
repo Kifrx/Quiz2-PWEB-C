@@ -10,9 +10,7 @@
             </a>
         </li>
         <li>
-            <a href="articles.jsp" class="nav-link text-white ${param.page == 'article' ? 'active' : ''}">
-                Article Management
-            </a>
+           <a href="${pageContext.request.contextPath}/admin/articles">
         </li>
     </ul>
     <hr>

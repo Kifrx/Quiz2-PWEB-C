@@ -5,9 +5,23 @@
     </div>
     <div class="offcanvas-body">
         <div class="list-group list-group-flush">
-            <a href="favorites.jsp" class="list-group-item list-group-item-action list-group-item-dark bg-transparent text-white border-secondary">My Favorites</a>
-            <a href="top-10.jsp" class="list-group-item list-group-item-action list-group-item-dark bg-transparent text-white border-secondary">Top 10 Films</a>
-            <a href="latest.jsp" class="list-group-item list-group-item-action list-group-item-dark bg-transparent text-white border-secondary">Latest Films</a>
+            
+            <a href="${pageContext.request.contextPath}/favorites" 
+               class="list-group-item list-group-item-action list-group-item-dark bg-transparent text-white border-secondary">
+               <i class="bi bi-heart me-2"></i> My Favorites
+            </a>
+
+            <a href="${pageContext.request.contextPath}/latest" 
+               class="list-group-item list-group-item-action list-group-item-dark bg-transparent text-white border-secondary">
+               <i class="bi bi-film me-2"></i> Latest Releases
+            </a>
+
+            <a href="${pageContext.request.contextPath}/top10" 
+   class="list-group-item list-group-item-action list-group-item-dark bg-transparent text-white border-secondary">
+   <i class="bi bi-trophy me-2"></i> Top 10 Movies
+</a>
+            
         </div>
     </div>
+    
 </div>

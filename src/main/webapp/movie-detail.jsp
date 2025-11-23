@@ -60,26 +60,25 @@
                         </div>
 
                         <div class="d-flex gap-2 mt-4 border-top pt-4">
-                            <form action="FavoriteServlet" method="POST">
-                                <input type="hidden" name="movieId" value="${movie.id}">
-                                
-                                <c:choose>
-                                    <c:when test="${isFavorite}">
-                                        <input type="hidden" name="action" value="remove">
-                                        <button type="submit" class="btn btn-danger px-4">
-                                            <i class="bi bi-heart-fill"></i> Remove from Favorites
-                                        </button>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <input type="hidden" name="action" value="add">
-                                        <button type="submit" class="btn btn-outline-danger px-4">
-                                            <i class="bi bi-heart"></i> Add to Favorites
-                                        </button>
-                                    </c:otherwise>
-                                </c:choose>
-                            </form>
+                            <form action="${pageContext.request.contextPath}/addToFavorites" method="POST" style="display: inline;">
+    
+    <input type="hidden" name="movieId" value="${movie.id}">
+    
+    <c:choose>
+        <c:when test="${isFavorite}">
+            <button type="submit" class="btn btn-danger px-4">
+                <i class="bi bi-heart-fill"></i> Remove from Favorites
+            </button>
+        </c:when>
+        <c:otherwise>
+            <button type="submit" class="btn btn-outline-danger px-4">
+                <i class="bi bi-heart"></i> Add to Favorites
+            </button>
+        </c:otherwise>
+    </c:choose>
+</form>
                             
-                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -141,7 +140,7 @@
                                         <span class="text-warning fw-bold">★ ${review.rating}/5</span>
                                     </div>
                                     <p class="mb-0 mt-2 text-secondary">${review.comment}</p>
-                                    <small class="text-muted mt-2 d-block">${review.date}</small>
+                                    <small class="text-muted mt-2 d-block">${review.reviewDate}</small>
                                 </div>
                             </div>
                         </c:forEach>

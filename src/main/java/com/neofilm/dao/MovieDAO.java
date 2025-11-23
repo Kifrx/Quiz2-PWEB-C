@@ -1,6 +1,5 @@
 package com.neofilm.dao;
 
-import com.neofilm.config.Koneksi;
 import com.neofilm.model.Movie;
 import com.neofilm.utils.DBConnection;
 import java.sql.*;
@@ -8,6 +7,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MovieDAO {
+
+    private Movie mapRowToMovie(ResultSet rs) throws SQLException {
+        Movie m = new Movie();
+        m.setId(rs.getInt("id"));
+        m.setTitle(rs.getString("title"));
+        m.setReleaseDate(rs.getString("release_date"));
+        m.setGenre(rs.getString("genre"));
+        m.setSynopsis(rs.getString("synopsis"));
+
+        m.setPosterPath(rs.getString("poster_path"));
+        m.setRating(rs.getDouble("rating"));
+        m.setDirector(rs.getString("director"));
+        m.setActors(rs.getString("actors"));
+        m.setDuration(rs.getInt("duration"));
+        return m;
+    }
 
     public boolean addMovie(Movie movie) {
         String sql = "INSERT INTO movies (title, release_date, genre, synopsis, poster_path, rating, director, actors, duration) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -25,8 +40,7 @@ public class MovieDAO {
             ps.setString(8, movie.getActors());
             ps.setInt(9, movie.getDuration());
 
-            int rowAffected = ps.executeUpdate();
-            return rowAffected > 0;
+            return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -43,20 +57,7 @@ public class MovieDAO {
                 ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                Movie m = new Movie();
-                m.setId(rs.getInt("id"));
-                m.setTitle(rs.getString("title"));
-                m.setReleaseDate(rs.getString("release_date"));
-                m.setGenre(rs.getString("genre"));
-                m.setSynopsis(rs.getString("synopsis"));
-                m.setPosterPath(rs.getString("poster_path"));
-                m.setRating(rs.getDouble("rating"));
-
-                m.setDirector(rs.getString("director"));
-                m.setActors(rs.getString("actors"));
-                m.setDuration(rs.getInt("duration"));
-
-                movies.add(m);
+                movies.add(mapRowToMovie(rs));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,39 +65,30 @@ public class MovieDAO {
         return movies;
     }
 
-    public Movie selectMovie(int id) {
-        Movie movie = null;
-        try (Connection connection = Koneksi.getConnection();
-                PreparedStatement preparedStatement = connection
-                        .prepareStatement("SELECT * FROM movies WHERE id = ?")) {
+    public Movie getMovieById(int id) {
+        Movie m = null;
+        String sql = "SELECT * FROM movies WHERE id = ?";
 
-            preparedStatement.setInt(1, id);
-            ResultSet rs = preparedStatement.executeQuery();
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            if (rs.next()) {
-                movie = new Movie();
-                movie.setId(rs.getInt("id"));
-                movie.setTitle(rs.getString("title"));
-                movie.setReleaseDate(rs.getString("release_date"));
-                movie.setGenre(rs.getString("genre"));
-                movie.setDuration(rs.getInt("duration"));
-                movie.setRating(rs.getDouble("rating"));
-                movie.setSynopsis(rs.getString("synopsis"));
-                movie.setDirector(rs.getString("director"));
-                movie.setActors(rs.getString("actors"));
-                movie.setPosterPath(rs.getString("poster_url"));
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    m = mapRowToMovie(rs);
+                }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return movie;
+        return m;
     }
 
     public boolean updateMovie(Movie movie) {
-        boolean rowUpdated = false;
-        String sql = "UPDATE movies SET title = ?, release_date = ?, genre = ?, duration = ?, rating = ?, synopsis = ?, director = ?, actors = ?, poster_url = ? WHERE id = ?";
 
-        try (Connection connection = Koneksi.getConnection();
+        String sql = "UPDATE movies SET title = ?, release_date = ?, genre = ?, duration = ?, rating = ?, synopsis = ?, director = ?, actors = ?, poster_path = ? WHERE id = ?";
+
+        try (Connection connection = DBConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, movie.getTitle());
@@ -110,23 +102,22 @@ public class MovieDAO {
             statement.setString(9, movie.getPosterPath());
             statement.setInt(10, movie.getId());
 
-            rowUpdated = statement.executeUpdate() > 0;
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return rowUpdated;
     }
 
     public boolean deleteMovie(int id) {
-        boolean rowDeleted = false;
-        try (Connection connection = Koneksi.getConnection();
+        try (Connection connection = DBConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement("DELETE FROM movies WHERE id = ?")) {
             statement.setInt(1, id);
-            rowDeleted = statement.executeUpdate() > 0;
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return rowDeleted;
     }
 
     public List<Movie> getTop10Movies() {
@@ -148,7 +139,8 @@ public class MovieDAO {
 
     public List<Movie> getLatestMovies() {
         List<Movie> movies = new ArrayList<>();
-        String sql = "SELECT * FROM movies ORDER BY release_date DESC LIMIT 12";
+
+        String sql = "SELECT * FROM movies ORDER BY release_date DESC LIMIT 3";
 
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql);
@@ -165,7 +157,6 @@ public class MovieDAO {
 
     public List<Movie> getFavoritesByUserId(int userId) {
         List<Movie> movies = new ArrayList<>();
-
         String sql = "SELECT m.* FROM movies m JOIN favorites f ON m.id = f.movie_id WHERE f.user_id = ? ORDER BY f.created_at DESC";
 
         try (Connection conn = DBConnection.getConnection();
@@ -220,49 +211,5 @@ public class MovieDAO {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    private Movie mapRowToMovie(ResultSet rs) throws SQLException {
-        Movie m = new Movie();
-        m.setId(rs.getInt("id"));
-        m.setTitle(rs.getString("title"));
-        m.setReleaseDate(rs.getString("release_date"));
-        m.setGenre(rs.getString("genre"));
-        m.setSynopsis(rs.getString("synopsis"));
-        m.setPosterPath(rs.getString("poster_path"));
-        m.setRating(rs.getDouble("rating"));
-        m.setDirector(rs.getString("director"));
-        m.setActors(rs.getString("actors"));
-        m.setDuration(rs.getInt("duration"));
-        return m;
-    }
-
-    public Movie getMovieById(int id) {
-        Movie m = null;
-        String sql = "SELECT * FROM movies WHERE id = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    m = new Movie();
-                    m.setId(rs.getInt("id"));
-                    m.setTitle(rs.getString("title"));
-                    m.setReleaseDate(rs.getString("release_date"));
-                    m.setGenre(rs.getString("genre"));
-                    m.setSynopsis(rs.getString("synopsis"));
-                    m.setPosterPath(rs.getString("poster_path"));
-                    m.setRating(rs.getDouble("rating"));
-                    m.setDirector(rs.getString("director"));
-                    m.setActors(rs.getString("actors"));
-                    m.setDuration(rs.getInt("duration"));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return m;
     }
 }

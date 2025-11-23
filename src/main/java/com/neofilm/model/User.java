@@ -2,15 +2,21 @@ package com.neofilm.model;
 
 public class User {
     private int id;
-    private String fullName;
+    private String username; // Ganti fullName jadi username
     private String email;
     private String password;
-    private String role; // 'admin' atau 'user'
+    private String role;
 
     public User() {
     }
 
-    // Getters and Setters
+    public User(String username, String email, String password, String role) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     public int getId() {
         return id;
     }
@@ -19,12 +25,12 @@ public class User {
         this.id = id;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {

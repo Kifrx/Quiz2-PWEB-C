@@ -44,8 +44,9 @@ public class MovieServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String idStr = request.getParameter("id");
+        request.setCharacterEncoding("UTF-8");
 
+        String idStr = request.getParameter("id");
         String title = request.getParameter("title");
         String releaseDate = request.getParameter("releaseDate");
         String genre = request.getParameter("genre");
@@ -54,6 +55,7 @@ public class MovieServlet extends HttpServlet {
         String director = request.getParameter("director");
         String actors = request.getParameter("actors");
         String durationStr = request.getParameter("duration");
+
         String posterUrl = request.getParameter("posterUrl");
 
         Movie m = new Movie();
@@ -66,8 +68,13 @@ public class MovieServlet extends HttpServlet {
         m.setPosterPath(posterUrl);
 
         try {
-            m.setRating(Double.parseDouble(ratingStr));
-            m.setDuration(Integer.parseInt(durationStr));
+
+            if (ratingStr != null && !ratingStr.isEmpty()) {
+                m.setRating(Double.parseDouble(ratingStr));
+            }
+            if (durationStr != null && !durationStr.isEmpty()) {
+                m.setDuration(Integer.parseInt(durationStr));
+            }
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
@@ -84,6 +91,8 @@ public class MovieServlet extends HttpServlet {
         }
 
         if (success) {
+
+            request.getSession().setAttribute("success", "Movie saved successfully!");
             response.sendRedirect(request.getContextPath() + "/MovieServlet?status=success");
         } else {
             response.sendRedirect(request.getContextPath() + "/MovieServlet?status=error");
@@ -93,7 +102,9 @@ public class MovieServlet extends HttpServlet {
     private void listMovies(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<Movie> movies = movieDAO.getAllMovies();
-        request.setAttribute("listMovies", movies);
+
+        request.setAttribute("movies", movies);
+
         request.getRequestDispatcher("admin/movies.jsp").forward(request, response);
     }
 
@@ -102,7 +113,7 @@ public class MovieServlet extends HttpServlet {
 
         int id = Integer.parseInt(request.getParameter("id"));
 
-        Movie existingMovie = movieDAO.selectMovie(id);
+        Movie existingMovie = movieDAO.getMovieById(id);
 
         request.setAttribute("movie", existingMovie);
         request.getRequestDispatcher("admin/movie-form.jsp").forward(request, response);
@@ -112,6 +123,8 @@ public class MovieServlet extends HttpServlet {
             throws IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         movieDAO.deleteMovie(id);
+
+        request.getSession().setAttribute("success", "Movie deleted successfully!");
         response.sendRedirect(request.getContextPath() + "/MovieServlet?status=deleted");
     }
 }

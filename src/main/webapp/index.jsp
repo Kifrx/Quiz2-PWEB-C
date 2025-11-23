@@ -38,7 +38,7 @@
                                 <a href="movie-detail?id=${movie.id}" class="text-decoration-none">
                                     <div style="height: 350px; overflow: hidden; background: #eee;">
                                         <c:choose>
-                                            <%-- Cek apakah posterPath adalah link online (http) --%>
+                                            
                                             <c:when test="${movie.posterPath != null && movie.posterPath.startsWith('http')}">
                                                 <img src="${movie.posterPath}" 
                                                      class="card-img-top w-100 h-100" 
@@ -46,7 +46,7 @@
                                                      alt="${movie.title}"
                                                      onerror="this.src='https://dummyimage.com/300x450/ccc/000&text=No+Image'">
                                             </c:when>
-                                            <%-- Jika bukan http, berarti file lokal di folder uploads --%>
+                                           
                                             <c:otherwise>
                                                 <img src="${pageContext.request.contextPath}/uploads/${movie.posterPath}" 
                                                      class="card-img-top w-100 h-100" 

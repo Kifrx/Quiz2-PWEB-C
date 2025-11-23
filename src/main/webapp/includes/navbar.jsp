@@ -10,7 +10,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/home">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="article.jsp">Articles</a></li>
+                <a class="nav-link" href="${pageContext.request.contextPath}/articles">Articles</a>
             </ul>
             <div class="d-flex gap-2">
                 <% if (session.getAttribute("user") == null) { %>

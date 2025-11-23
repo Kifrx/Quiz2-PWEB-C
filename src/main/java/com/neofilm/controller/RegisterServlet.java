@@ -1,21 +1,24 @@
 package com.neofilm.controller;
 
+import com.neofilm.dao.UserDAO;
+import com.neofilm.model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
 
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/neofilm";
-    private static final String DB_USER = "root";
-    private static final String DB_PASS = "";
+    private UserDAO userDAO;
+
+    @Override
+    public void init() {
+
+        userDAO = new UserDAO();
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -25,30 +28,21 @@ public class RegisterServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        try {
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setEmail(email);
+        newUser.setPassword(password);
 
-            Class.forName("com.mysql.cj.jdbc.Driver");
+        boolean isSuccess = userDAO.register(newUser);
 
-            try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS)) {
+        if (isSuccess) {
+            System.out.println("User baru berhasil dibuat!");
 
-                String sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+            response.sendRedirect("login.jsp?status=registered");
+        } else {
 
-                PreparedStatement statement = conn.prepareStatement(sql);
-                statement.setString(1, username);
-                statement.setString(2, email);
-                statement.setString(3, password);
-
-                int rowsInserted = statement.executeUpdate();
-
-                if (rowsInserted > 0) {
-                    System.out.println("User baru berhasil dibuat!");
-                    response.sendRedirect("login.jsp");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            response.getWriter().println("Register Gagal: " + e.getMessage());
+            request.setAttribute("errorMessage", "Registrasi Gagal. Coba lagi.");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }
 }
